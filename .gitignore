@@ -1,0 +1,11 @@
+# Ignore Vercel configuration
+.vercel
+
+# Ignore dependencies
+node_modules/
+
+# Ignore environment variables
+.env
+
+# Ignore JetBrains IDE settings
+.idea/
