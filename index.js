@@ -38,7 +38,7 @@ app.use("/auth", authRoutes);
 app.use("/openAI", openAI);
 
 mongoose
-  .connect(`${process.env.MongoDBUrl}`)
+  .connect(`${process.env.MongoDbURL}`)
   .then(() => {
     console.log("Connected to DB");
     app.listen(PORT, () => {
