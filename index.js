@@ -9,10 +9,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const MongoDBUrl = process.env.MongoDBUrl;
+const MongoDBUrl = String(process.env.MongoDBUrl);
 const PORT = process.env.PORT || 5555;
-console.log(MongoDBUrl)
-
 
 app.use(express.static("public"));
 
