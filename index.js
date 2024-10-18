@@ -9,7 +9,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const MongoDBUrl = String(process.env.MongoDBUrl);
 const PORT = process.env.PORT || 5555;
 
 app.use(express.static("public"));
@@ -39,7 +38,7 @@ app.use("/auth", authRoutes);
 app.use("/openAI", openAI);
 
 mongoose
-  .connect(MongoDBUrl)
+  .connect(`${process.env.MongoDBUrl}`)
   .then(() => {
     console.log("Connected to DB");
     app.listen(PORT, () => {
