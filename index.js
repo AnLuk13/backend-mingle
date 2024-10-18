@@ -10,7 +10,7 @@ dotenv.config();
 
 const app = express();
 const MongoDBUrl = process.env.MongoDBUrl;
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5555;
 console.log(MongoDBUrl)
 
 
