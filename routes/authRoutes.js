@@ -18,7 +18,9 @@ router.post("/login", async (req, res) => {
       // Ensure it's saved as a string
       httpOnly: false, // Ensures the cookie is sent only via HTTP(S)
       maxAge: 24 * 60 * 60 * 1000, // 1 day expiration
-      secure: false, // Set to true in production (if using HTTPS)
+      secure: false,
+      path: "/",
+      domain: ".vercel.app", // Set to true in production (if using HTTPS)
     });
     res
       .status(200)
@@ -58,6 +60,8 @@ router.post("/reset-password", async (req, res) => {
       httpOnly: false,
       maxAge: 24 * 60 * 60 * 1000,
       secure: false,
+      path: "/",
+      domain: ".vercel.app",
     });
 
     return res.status(200).json({
