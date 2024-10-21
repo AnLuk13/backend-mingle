@@ -45,6 +45,7 @@ router.post("/logout", (req, res) => {
 // Check session (verify JWT)
 router.get("/session", (req, res) => {
   const token = req.cookies.token;
+  console.log("token", token)
   if (!token) {
     return res.status(401).json({ isAuthenticated: false });
   }
