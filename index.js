@@ -10,7 +10,6 @@ dotenv.config();
 
 const app = express();
 const MongoDBUrl = process.env.MongoDbURL;
-const PORT = process.env.PORT || 5555;
 
 app.use(express.static("public"));
 

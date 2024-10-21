@@ -25,6 +25,7 @@ router.post("/login", async (req, res) => {
     res.cookie("token", token, {
       httpOnly: false,
       secure: false,
+      sameSite: "None",
       maxAge: 24 * 60 * 60 * 1000, // 1 day expiration
     });
     res.status(200).json({ message: "Logged in successfully", token: token });
@@ -50,7 +51,7 @@ router.get("/session", (req, res) => {
     if (err) {
       return res.status(401).json({ isAuthenticated: false });
     }
-    return res.status(200).json({ isAuthenticated: true, userId: decoded });
+    return res.status(200).json({ isAuthenticated: true, userId: decoded.id });
   });
 });
 
@@ -69,6 +70,7 @@ router.post("/reset-password", async (req, res) => {
     res.cookie("token", token, {
       httpOnly: false,
       secure: false,
+      sameSite: "None",
       maxAge: 24 * 60 * 60 * 1000, // 1 day expiration
     });
 
