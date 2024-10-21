@@ -14,14 +14,8 @@ router.post("/login", async (req, res) => {
     if (password !== user.password) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-    res.cookie("sessionId", String(user._id), {
-      // Ensure it's saved as a string
-      httpOnly: false, // Ensures the cookie is sent only via HTTP(S)
-      maxAge: 24 * 60 * 60 * 1000, // 1 day expiration
-      path: "/",
-      secure: true, // Required for SameSite=None with HTTPS
-      sameSite: "None", // Set to true in production (if using HTTPS)
-    });
+
+    // No need to set cookies in the backend
     res
       .status(200)
       .json({ message: "Logged in successfully", sessionId: user._id });
@@ -32,7 +26,6 @@ router.post("/login", async (req, res) => {
 
 //logout
 router.post("/logout", (req, res) => {
-  res.clearCookie("sessionId"); // Clear sessionId cookie
   return res.status(200).json({ message: "Logged out successfully" });
 });
 
@@ -55,15 +48,8 @@ router.post("/reset-password", async (req, res) => {
     }
     user.password = newPassword;
     await user.save();
-    // Set the new sessionId in the cookie after resetting the password
-    res.cookie("sessionId", String(user._id), {
-      httpOnly: false,
-      maxAge: 24 * 60 * 60 * 1000,
-      path: "/",
-      secure: true, // Required for SameSite=None with HTTPS
-      sameSite: "None",
-    });
 
+    // No need to set the cookie, just return sessionId
     return res.status(200).json({
       message: "Password updated successfully and user logged in",
       sessionId: user._id,
