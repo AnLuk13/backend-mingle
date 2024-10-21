@@ -14,12 +14,15 @@ router.post("/login", async (req, res) => {
     if (password !== user.password) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-    res.cookie('sessionId', String(user._id), { // Ensure it's saved as a string
+    res.cookie("sessionId", String(user._id), {
+      // Ensure it's saved as a string
       httpOnly: false, // Ensures the cookie is sent only via HTTP(S)
       maxAge: 24 * 60 * 60 * 1000, // 1 day expiration
       secure: false, // Set to true in production (if using HTTPS)
     });
-    res.status(200).json({ message: "Logged in successfully", sessionId: user._id });
+    res
+      .status(200)
+      .json({ message: "Logged in successfully", sessionId: user._id });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -31,7 +34,15 @@ router.post("/logout", (req, res) => {
   return res.status(200).json({ message: "Logged out successfully" });
 });
 
-//check session
+//check
+router.get("/session", (req, res) => {
+  const sessionId = req.cookies.sessionId;
+  if (sessionId) {
+    return res.status(200).json({ isAuthenticated: true, sessionId });
+  }
+  return res.status(401).json({ isAuthenticated: false });
+});
+
 router.post("/reset-password", async (req, res) => {
   const { email, newPassword } = req.body;
 
@@ -43,7 +54,7 @@ router.post("/reset-password", async (req, res) => {
     user.password = newPassword;
     await user.save();
     // Set the new sessionId in the cookie after resetting the password
-    res.cookie('sessionId', String(user._id), {
+    res.cookie("sessionId", String(user._id), {
       httpOnly: false,
       maxAge: 24 * 60 * 60 * 1000,
       secure: false,
@@ -60,8 +71,6 @@ router.post("/reset-password", async (req, res) => {
 });
 
 export default router;
-
-
 
 // router.post("/forgot-password", async (req, res) => {
 //   const { email } = req.body;
@@ -96,4 +105,3 @@ export default router;
 //     return res.status(500).json({ message: "Server error" });
 //   }
 // });
-
