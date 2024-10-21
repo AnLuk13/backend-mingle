@@ -34,6 +34,8 @@ router.post("/login", async (req, res) => {
   }
 });
 
+//testing
+
 // Logout
 router.post("/logout", (req, res) => {
   res.clearCookie("token"); // Clear JWT token cookie
