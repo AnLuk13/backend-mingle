@@ -8,7 +8,7 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const generateToken = (userId) => {
-  return jwt.sign(userId, JWT_SECRET, {
+  return jwt.sign({ id: userId }, JWT_SECRET, {
     expiresIn: "1d", // Token will expire in 1 day
   });
 };
@@ -18,7 +18,7 @@ router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
-    if (!user) {
+    if (!user || password !== user.password) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
     const token = generateToken(user._id);
