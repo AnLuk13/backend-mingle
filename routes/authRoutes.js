@@ -25,6 +25,7 @@ router.post("/login", async (req, res) => {
     res.cookie("token", token, {
       httpOnly: false,
       secure: false,
+      sameSite: "None",
       maxAge: 24 * 60 * 60 * 1000, // 1 day expiration
     });
     res.status(200).json({ message: "Logged in successfully", token: token });
@@ -69,6 +70,7 @@ router.post("/reset-password", async (req, res) => {
     res.cookie("token", token, {
       httpOnly: false,
       secure: false,
+      sameSite: "None",
       maxAge: 24 * 60 * 60 * 1000, // 1 day expiration
     });
 
