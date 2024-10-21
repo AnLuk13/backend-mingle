@@ -24,7 +24,7 @@ router.post("/login", async (req, res) => {
     const token = generateToken(user._id);
     res.cookie("token", token, {
       httpOnly: false,
-      secure: false,
+      secure: true,
       sameSite: "None",
       maxAge: 24 * 60 * 60 * 1000, // 1 day expiration
     });
@@ -71,7 +71,7 @@ router.post("/reset-password", async (req, res) => {
     const token = generateToken(user._id);
     res.cookie("token", token, {
       httpOnly: false,
-      secure: false,
+      secure: true,
       sameSite: "None",
       maxAge: 24 * 60 * 60 * 1000, // 1 day expiration
     });
