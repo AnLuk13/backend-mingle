@@ -29,15 +29,6 @@ router.post("/logout", (req, res) => {
   return res.status(200).json({ message: "Logged out successfully" });
 });
 
-//check
-router.get("/session", (req, res) => {
-  const sessionId = req.cookies.sessionId;
-  if (sessionId) {
-    return res.status(200).json({ isAuthenticated: true, sessionId });
-  }
-  return res.status(401).json({ isAuthenticated: false });
-});
-
 router.post("/reset-password", async (req, res) => {
   const { email, newPassword } = req.body;
 
@@ -94,4 +85,13 @@ export default router;
 //     console.error("Error in forgot-password route:", error);
 //     return res.status(500).json({ message: "Server error" });
 //   }
+// });
+
+//check
+// router.get("/session", (req, res) => {
+//   const sessionId = req.cookies.sessionId;
+//   if (sessionId) {
+//     return res.status(200).json({ isAuthenticated: true, sessionId });
+//   }
+//   return res.status(401).json({ isAuthenticated: false });
 // });
