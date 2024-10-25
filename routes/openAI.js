@@ -13,10 +13,10 @@ const openai = new OpenAI({
 
 // Function to generate prompt for GPT
 const createFilterPrompt = (message) => {
-  return `
-    The user provided the following request: "${message}". 
-    Based on this request, create a MongoDB filter object that can be used to find matching products in a database.
-    The product has the following structure: {
+  return `    The user provided the following request: "${message}". 
+    Based on this request, create a MongoDB filter object to find matching products in a database.
+    The product schema includes the following fields:
+    {
         _id: ObjectId,
         name: String,
         category: String,
@@ -35,11 +35,26 @@ const createFilterPrompt = (message) => {
         updatedAt: Date,
         __v: Int32
     }.
-    The filter should match fields such as "name", "category", "price", "color", and "brand".
-    If the request is too vague, provide feedback to the user requesting more specific information. 
-    Always respond in the language in which the user asked the question.
+
+    Categories include:
+    - Furniture (e.g., Office Furniture, Outdoor Furniture, Living Room Furniture, Bedroom Furniture)
+    - Home Decor (e.g., Vases, Paintings, Decorative Items)
+    - Art (e.g., Paintings, Sculptures, Art Prints)
+    - Outdoor Furniture (e.g., Deck Chairs, Tables, Outdoor Sets)
+    - Environment (e.g., Planters, Pots, Garden Accessories)
+
+    The filter should:
+    - Match exact and broader categories (e.g., "Furniture" should include all its subcategories).
+    - Support exact matches for "name", "color", and "brand".
+    - Handle range queries for "price" and "stock".
+    - Handle partial text matches for "name" and "description".
+    - Include boolean filters for fields like "discount".
+
+    If the request is too vague, ask for specifics like price range, stock, or category details. 
+
+    Always respond in the user’s language.
     Return a valid JSON filter object.
-  `;
+`;
 };
 
 router.post("/", async (req, res) => {
