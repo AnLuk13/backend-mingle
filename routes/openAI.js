@@ -1,17 +1,17 @@
 import express from "express";
-import { OpenAIApi } from "openai";
+import OpenAI from "openai"; // Corrected import
 import { Product } from "../models/productModel.js";
 import dotenv from "dotenv";
 
-dotenv.config(); // Pentru a putea accesa cheile din .env
+dotenv.config();
 
 const router = express.Router();
 
-const openai = new OpenAIApi({
-  apiKey: process.env.OPENAI_API_KEY,
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY, // Use your actual API key
 });
 
-// Funcție care generează un prompt GPT pentru a obține un filtru valid
+// Function to generate prompt for GPT
 const createFilterPrompt = (message) => {
   return `
     The user provided the following request: "${message}". 
@@ -44,10 +44,10 @@ const createFilterPrompt = (message) => {
 
 router.post("/", async (req, res) => {
   try {
-    const { message } = req.body; // Mesajul utilizatorului
+    const { message } = req.body;
 
-    // Trimiterea inputului utilizatorului la modelul GPT pentru interpretare și generarea unui filtru
-    const gptResponse = await openai.createChatCompletion({
+    // Sending the user input to GPT for processing and generating a filter
+    const gptResponse = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
         {
@@ -55,42 +55,34 @@ router.post("/", async (req, res) => {
           content:
             "You are a product recommendation assistant for an e-commerce platform.",
         },
-        { role: "user", content: createFilterPrompt(message) }, // Generăm promptul din cererea utilizatorului
+        { role: "user", content: createFilterPrompt(message) },
       ],
-      max_tokens: 200, // Set max tokens
+      max_tokens: 200,
     });
 
-    const gptFilterResponse =
-      gptResponse.data.choices[0].message.content.trim();
+    const gptFilterResponse = gptResponse.choices[0].message.content.trim();
 
-    // Verificăm dacă GPT a returnat un filtru valid (JSON)
+    // Attempt to parse the response as JSON for the filter
     let filter;
     try {
-      filter = JSON.parse(gptFilterResponse); // Încercăm să transformăm răspunsul GPT într-un obiect JSON
+      filter = JSON.parse(gptFilterResponse);
     } catch (error) {
       return res.status(400).json({
-        message:
-          "Asistentul nu a putut genera un filtru valid. Vă rugăm să furnizați mai multe detalii despre ceea ce doriți.",
+        message: "Invalid filter generated. Please provide more details.",
       });
     }
 
-    // Căutăm produsele din baza de date folosind filtrul generat de GPT
+    // Query the database for products matching the filter
     const products = await Product.find(filter);
 
-    // Verificăm dacă au fost găsite produse
     if (products.length > 0) {
-      res.json(products); // Returnăm produsele în format JSON
+      res.json(products);
     } else {
-      res.json({
-        message:
-          "Nu au fost găsite produse care să corespundă cerințelor specificate.",
-      });
+      res.json({ message: "No matching products found." });
     }
   } catch (error) {
-    console.error("Eroare la recomandările GPT:", error.message); // Log the full error object
-    res.status(500).json({
-      message: "Eroare la prelucrarea cererii. Vă rugăm să încercați din nou.",
-    });
+    console.error("Error with GPT recommendation:", error.message);
+    res.status(500).json({ message: "Server error. Please try again later." });
   }
 });
 
