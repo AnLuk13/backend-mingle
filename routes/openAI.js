@@ -1,15 +1,15 @@
 import express from "express";
-import { Configuration, OpenAIApi } from "openai";
+import { OpenAIApi } from "openai";
 import { Product } from "../models/productModel.js";
 import dotenv from "dotenv";
+
 dotenv.config(); // Pentru a putea accesa cheile din .env
 
 const router = express.Router();
 
-const configuration = new Configuration({
+const openai = new OpenAIApi({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 // Funcție care generează un prompt GPT pentru a obține un filtru valid
 const createFilterPrompt = (message) => {
@@ -46,6 +46,7 @@ router.post("/", async (req, res) => {
   try {
     const { message } = req.body; // Mesajul utilizatorului
 
+    // Trimiterea inputului utilizatorului la modelul GPT pentru interpretare și generarea unui filtru
     const gptResponse = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       messages: [
@@ -56,12 +57,13 @@ router.post("/", async (req, res) => {
         },
         { role: "user", content: createFilterPrompt(message) }, // Generăm promptul din cererea utilizatorului
       ],
-      max_tokens: 200, // Increased token limit
+      max_tokens: 200, // Set max tokens
     });
 
     const gptFilterResponse =
       gptResponse.data.choices[0].message.content.trim();
 
+    // Verificăm dacă GPT a returnat un filtru valid (JSON)
     let filter;
     try {
       filter = JSON.parse(gptFilterResponse); // Încercăm să transformăm răspunsul GPT într-un obiect JSON
@@ -72,8 +74,10 @@ router.post("/", async (req, res) => {
       });
     }
 
+    // Căutăm produsele din baza de date folosind filtrul generat de GPT
     const products = await Product.find(filter);
 
+    // Verificăm dacă au fost găsite produse
     if (products.length > 0) {
       res.json(products); // Returnăm produsele în format JSON
     } else {
@@ -83,7 +87,7 @@ router.post("/", async (req, res) => {
       });
     }
   } catch (error) {
-    console.error("Eroare la recomandările GPT:", error); // Log the full error object
+    console.error("Eroare la recomandările GPT:", error.message); // Log the full error object
     res.status(500).json({
       message: "Eroare la prelucrarea cererii. Vă rugăm să încercați din nou.",
     });
