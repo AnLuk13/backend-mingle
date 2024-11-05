@@ -76,6 +76,7 @@ router.post("/", async (req, res) => {
     });
 
     const gptFilterResponse = gptResponse.choices[0].message.content.trim();
+    console.log(gptFilterResponse);
 
     // Attempt to parse the response as JSON for the filter
     let filter;
