@@ -14,8 +14,6 @@ router.post("/login", async (req, res) => {
     if (password !== user.password) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-
-    // No need to set cookies in the backend
     res
       .status(200)
       .json({ message: "Logged in successfully", sessionId: user._id });
