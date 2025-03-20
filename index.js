@@ -37,11 +37,16 @@ app.use("/users", userRoutes);
 app.use("/auth", authRoutes);
 app.use("/openAI", openAI);
 
+// const PORT = process.env.PORT || 5000; // for development
+
 // Mongoose connection to MongoDB
 mongoose
     .connect(MongoDBUrl)
     .then(() => {
         console.log("Connected to DB");
+        // app.listen(PORT, () => {
+        //     console.log(`🚀 Server running on port ${PORT}`);
+        // }); // for development
     })
     .catch((error) => {
         console.log("Database connection error:", error);
