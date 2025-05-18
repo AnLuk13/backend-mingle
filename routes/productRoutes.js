@@ -30,7 +30,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-//get all books
+//get all products
 router.get("/", async (req, res) => {
   try {
     const products = await Product.find({});
