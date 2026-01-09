@@ -26,7 +26,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: `http://localhost:${PORT}`,
+        url: `http://localhost:${PORT} | 5000`,
         description: "Development server",
       },
       {
@@ -35,7 +35,7 @@ const swaggerOptions = {
       },
     ],
   },
-  apis: ["./routes/*.js"],
+  apis: ["./routes/*.js", "./models/*.js"],
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);

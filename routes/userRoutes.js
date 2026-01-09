@@ -13,7 +13,7 @@ const router = express.Router();
  *     summary: Get all users
  *     responses:
  *       200:
- *         description: List of all users
+ *         description: List of all users with populated wishlist
  *         content:
  *           application/json:
  *             schema:
@@ -24,7 +24,7 @@ const router = express.Router();
  *                 data:
  *                   type: array
  *                   items:
- *                     type: object
+ *                     $ref: '#/components/schemas/UserWithPopulatedWishlist'
  *       500:
  *         description: Server error
  */
@@ -55,7 +55,11 @@ router.get("/", async (req, res) => {
  *         description: User ID
  *     responses:
  *       200:
- *         description: User found
+ *         description: User found with populated wishlist
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserWithPopulatedWishlist'
  *       404:
  *         description: User not found
  *       500:
@@ -88,22 +92,14 @@ router.get("/:userId", async (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *               password:
- *                 type: string
- *               name:
- *                 type: string
- *               wishlist:
- *                 type: array
- *                 items:
- *                   type: string
+ *             $ref: '#/components/schemas/User'
  *     responses:
  *       201:
  *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
  *       400:
  *         description: Invalid request body
  *       500:
@@ -153,6 +149,10 @@ router.post("/", async (req, res) => {
  *     responses:
  *       200:
  *         description: User updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
  *       404:
  *         description: User not found
  *       500:
@@ -242,6 +242,10 @@ router.delete("/:userId", async (req, res) => {
  *     responses:
  *       200:
  *         description: Wishlist updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserWithPopulatedWishlist'
  *       400:
  *         description: Product ID is required
  *       401:

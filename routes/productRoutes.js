@@ -15,38 +15,14 @@ const router = express.Router();
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - name
- *               - category
- *               - price
- *               - stock
- *               - modelSrc
- *               - iOSSrc
- *             properties:
- *               name:
- *                 type: string
- *               category:
- *                 type: string
- *               description:
- *                 type: string
- *               price:
- *                 type: number
- *               stock:
- *                 type: number
- *               modelSrc:
- *                 type: string
- *               iOSSrc:
- *                 type: string
- *               color:
- *                 type: string
- *               brand:
- *                 type: string
- *               discount:
- *                 type: boolean
+ *             $ref: '#/components/schemas/Product'
  *     responses:
  *       201:
  *         description: Product created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
  *       400:
  *         description: Missing required fields
  *       500:
@@ -97,7 +73,7 @@ router.post("/", async (req, res) => {
  *                 data:
  *                   type: array
  *                   items:
- *                     type: object
+ *                     $ref: '#/components/schemas/Product'
  *       500:
  *         description: Server error
  */
@@ -129,6 +105,10 @@ router.get("/", async (req, res) => {
  *     responses:
  *       200:
  *         description: Product found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
  *       404:
  *         description: Product not found
  *       500:
@@ -168,26 +148,14 @@ router.get("/:id", async (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - name
- *               - category
- *               - price
- *               - stock
- *             properties:
- *               name:
- *                 type: string
- *               category:
- *                 type: string
- *               description:
- *                 type: string
- *               price:
- *                 type: number
- *               stock:
- *                 type: number
+ *             $ref: '#/components/schemas/Product'
  *     responses:
  *       200:
  *         description: Product updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
  *       400:
  *         description: Missing required fields
  *       404:
