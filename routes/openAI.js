@@ -78,6 +78,76 @@ Strict rules:
 Always return a valid JSON MongoDB filter object.`;
 };
 
+/**
+ * @openapi
+ * /ai/search:
+ *   post:
+ *     tags:
+ *       - AI Search
+ *     summary: Search products using natural language with AI
+ *     description: Use AI to interpret natural language queries and find matching products in the database
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - message
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 description: Natural language search query
+ *                 example: "provide items from furniture category"
+ *     responses:
+ *       200:
+ *         description: Products found successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 count:
+ *                   type: number
+ *                 products:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       400:
+ *         description: Bad request - message required or unable to process
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 suggestions:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       404:
+ *         description: No products match the criteria
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 suggestions:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       500:
+ *         description: Server error
+ */
 router.post("/", async (req, res) => {
   try {
     const { message } = req.body;
@@ -90,27 +160,49 @@ router.post("/", async (req, res) => {
     }
 
     const gptResponse = await openai.chat.completions.create({
-      model: "gpt-5-nano",
+      model: "gpt-4o-mini", // Using gpt-4o-mini instead - fast, cheap, and works better for simple JSON generation
       messages: [
         {
           role: "system",
           content:
-            "You are a product recommendation assistant for an e-commerce platform and a MongoDB expert. Your task is to generate MongoDB filter objects based on user queries. Respond only with a valid JSON object. Do not explain anything.",
+            "You are a MongoDB expert. Generate ONLY a valid MongoDB filter JSON object. Be extremely concise. No explanations, no markdown, no extra text.",
         },
         { role: "user", content: createFilterPrompt(message) },
       ],
-      max_completion_tokens: 120,
-      // temperature: 0,
+      max_tokens: 100,
+      temperature: 0,
     });
 
-    const gptFilterResponse = gptResponse.choices[0].message.content.trim();
-    console.log(gptFilterResponse);
+    let gptFilterResponse =
+      gptResponse.choices[0].message.content?.trim() || "";
+
+    // Check if response is empty
+    if (!gptFilterResponse) {
+      console.error("Empty response from GPT");
+      return res.status(400).json({
+        success: false,
+        message:
+          "Unable to generate filter. Please try again or rephrase your request.",
+      });
+    }
+
+    // Check if response was cut off due to length
+    if (gptResponse.choices[0].finish_reason === "length") {
+      console.warn("Response was truncated due to token limit");
+    }
+
+    // Remove markdown code blocks if present
+    if (gptFilterResponse.startsWith("```")) {
+      gptFilterResponse = gptFilterResponse
+        .replace(/```json\n?/g, "")
+        .replace(/```\n?/g, "")
+        .trim();
+    }
 
     // Attempt to parse the response as JSON for the filter
     let filter;
     try {
       filter = JSON.parse(gptFilterResponse);
-      console.log("filtered", filter);
     } catch (error) {
       return res.status(400).json({
         success: false,

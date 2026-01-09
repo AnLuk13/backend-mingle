@@ -3,6 +3,55 @@ import express from "express";
 
 const router = express.Router();
 
+/**
+ * @openapi
+ * /products:
+ *   post:
+ *     tags:
+ *       - Products
+ *     summary: Create a new product
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - category
+ *               - price
+ *               - stock
+ *               - modelSrc
+ *               - iOSSrc
+ *             properties:
+ *               name:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               stock:
+ *                 type: number
+ *               modelSrc:
+ *                 type: string
+ *               iOSSrc:
+ *                 type: string
+ *               color:
+ *                 type: string
+ *               brand:
+ *                 type: string
+ *               discount:
+ *                 type: boolean
+ *     responses:
+ *       201:
+ *         description: Product created successfully
+ *       400:
+ *         description: Missing required fields
+ *       500:
+ *         description: Server error
+ */
 //post a product
 router.post("/", async (req, res) => {
   try {
@@ -15,12 +64,10 @@ router.post("/", async (req, res) => {
       !modelSrc ||
       !iOSSrc
     ) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Please provide all required fields: name, category, price, stock, modelSrc, and iOSSrc.",
-        });
+      return res.status(400).json({
+        message:
+          "Please provide all required fields: name, category, price, stock, modelSrc, and iOSSrc.",
+      });
     }
     const product = await Product.create(req.body);
     return res.status(201).json(product);
@@ -30,6 +77,30 @@ router.post("/", async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /products:
+ *   get:
+ *     tags:
+ *       - Products
+ *     summary: Get all products
+ *     responses:
+ *       200:
+ *         description: List of all products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: number
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       500:
+ *         description: Server error
+ */
 //get all products
 router.get("/", async (req, res) => {
   try {
@@ -41,6 +112,28 @@ router.get("/", async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /products/{id}:
+ *   get:
+ *     tags:
+ *       - Products
+ *     summary: Get product by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *     responses:
+ *       200:
+ *         description: Product found
+ *       404:
+ *         description: Product not found
+ *       500:
+ *         description: Server error
+ */
 //get product by id
 router.get("/:id", async (req, res) => {
   try {
@@ -56,6 +149,52 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /products/{id}:
+ *   put:
+ *     tags:
+ *       - Products
+ *     summary: Update product by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - category
+ *               - price
+ *               - stock
+ *             properties:
+ *               name:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               stock:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Product updated successfully
+ *       400:
+ *         description: Missing required fields
+ *       404:
+ *         description: Product not found
+ *       500:
+ *         description: Server error
+ */
 //update a product by id
 router.put("/:id", async (req, res) => {
   try {
@@ -65,7 +204,7 @@ router.put("/:id", async (req, res) => {
       return res
         .status(400)
         .send(
-          "Please provide all required fields: name, category, price, stock.",
+          "Please provide all required fields: name, category, price, stock."
         );
     }
     const { id } = req.params;
@@ -84,6 +223,28 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /products/{id}:
+ *   delete:
+ *     tags:
+ *       - Products
+ *     summary: Delete product by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *     responses:
+ *       200:
+ *         description: Product deleted successfully
+ *       404:
+ *         description: Product not found
+ *       500:
+ *         description: Server error
+ */
 //delete by id
 router.delete("/:id", async (req, res) => {
   try {

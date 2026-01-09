@@ -4,6 +4,30 @@ import { Product } from "../models/productModel.js";
 
 const router = express.Router();
 
+/**
+ * @openapi
+ * /users:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: Get all users
+ *     responses:
+ *       200:
+ *         description: List of all users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: number
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       500:
+ *         description: Server error
+ */
 //get all users
 router.get("/", async (req, res) => {
   try {
@@ -15,6 +39,28 @@ router.get("/", async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /users/{userId}:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: Get user by ID
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     responses:
+ *       200:
+ *         description: User found
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
 //get user by id
 router.get("/:userId", async (req, res) => {
   const { userId } = req.params;
@@ -30,6 +76,39 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /users:
+ *   post:
+ *     tags:
+ *       - Users
+ *     summary: Create a new user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               wishlist:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *       400:
+ *         description: Invalid request body
+ *       500:
+ *         description: Server error
+ */
 //post a user
 router.post("/", async (req, res) => {
   try {
@@ -44,6 +123,41 @@ router.post("/", async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /users/{userId}:
+ *   put:
+ *     tags:
+ *       - Users
+ *     summary: Update user by ID
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
 // put request by id
 router.put("/:userId", async (req, res) => {
   try {
@@ -62,6 +176,28 @@ router.put("/:userId", async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /users/{userId}:
+ *   delete:
+ *     tags:
+ *       - Users
+ *     summary: Delete user by ID
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
 // delete request by id
 router.delete("/:userId", async (req, res) => {
   const { userId } = req.params;
@@ -77,6 +213,44 @@ router.delete("/:userId", async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /users/{userId}/wishlist:
+ *   put:
+ *     tags:
+ *       - Users
+ *     summary: Add or remove product from user wishlist
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - productId
+ *             properties:
+ *               productId:
+ *                 type: string
+ *                 description: Product ID to add or remove from wishlist
+ *     responses:
+ *       200:
+ *         description: Wishlist updated successfully
+ *       400:
+ *         description: Product ID is required
+ *       401:
+ *         description: User ID is missing or not logged in
+ *       404:
+ *         description: User or product not found
+ *       500:
+ *         description: Server error
+ */
 //edit users wishlist
 router.put("/:userId/wishlist", async (req, res) => {
   const { userId } = req.params;
@@ -106,13 +280,13 @@ router.put("/:userId/wishlist", async (req, res) => {
       updatedUser = await User.findByIdAndUpdate(
         userId,
         { $pull: { wishlist: productId } }, // $pull removes the item from wishlist
-        { new: true }, // Return the updated user document
+        { new: true } // Return the updated user document
       );
     } else {
       updatedUser = await User.findByIdAndUpdate(
         userId,
         { $addToSet: { wishlist: productId } }, // $addToSet ensures no duplicates
-        { new: true }, // Return the updated user document
+        { new: true } // Return the updated user document
       );
     }
     await updatedUser.populate("wishlist");

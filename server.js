@@ -1,17 +1,26 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import app from "./index.js";
+import { app } from "./index.js";
+import open from "open";
 
-// development only
+// Development server only - not used in production (Vercel)
 dotenv.config();
+
 const PORT = process.env.PORT || 5000;
+const MongoDBUrl = process.env.MongoDbURL;
 
 mongoose
-  .connect(process.env.MongoDbURL)
+  .connect(MongoDBUrl)
   .then(() => {
-    console.log("Connected to DB");
-    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+    console.log("✅ Connected to MongoDB");
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(`📚 API Documentation: http://localhost:${PORT}/docs`);
+      // Auto-open Swagger docs in browser
+      open(`http://localhost:${PORT}/docs`);
+    });
   })
   .catch((error) => {
-    console.log("Database connection error:", error);
+    console.error("❌ Database connection error:", error);
+    process.exit(1);
   });
