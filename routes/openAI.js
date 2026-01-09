@@ -99,7 +99,7 @@ router.post("/", async (req, res) => {
         },
         { role: "user", content: createFilterPrompt(message) },
       ],
-      max_tokens: 120,
+      max_completion_tokens: 120,
       temperature: 0,
     });
 
