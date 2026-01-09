@@ -90,7 +90,7 @@ router.post("/", async (req, res) => {
     }
 
     const gptResponse = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-5-nano",
       messages: [
         {
           role: "system",
@@ -99,8 +99,8 @@ router.post("/", async (req, res) => {
         },
         { role: "user", content: createFilterPrompt(message) },
       ],
-      max_tokens: 100,
-      temperature: 0.7,
+      max_tokens: 120,
+      temperature: 0,
     });
 
     const gptFilterResponse = gptResponse.choices[0].message.content.trim();
