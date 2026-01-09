@@ -100,7 +100,7 @@ router.post("/", async (req, res) => {
         { role: "user", content: createFilterPrompt(message) },
       ],
       max_completion_tokens: 120,
-      temperature: 0,
+      // temperature: 0,
     });
 
     const gptFilterResponse = gptResponse.choices[0].message.content.trim();
