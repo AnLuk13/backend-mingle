@@ -79,7 +79,7 @@ const userSchema = mongoose.Schema(
     password: {
       type: String,
       required: true,
-      select: false, // 👈 automatically excluded
+      // select: false, // 👈 automatically excluded
     },
     wishlist: [
       {
